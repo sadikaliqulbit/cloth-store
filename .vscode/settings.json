@@ -1,0 +1,19 @@
+{
+  "files.watcherExclude": {
+    "**/.git/**": true,
+    "**/node_modules/**": true,
+    "**/.next/**": true,
+    "**/dist/**": true
+  },
+
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.next": true
+  },
+
+  "git.autofetch": false,
+
+  "explorer.fileNesting.enabled": false,
+
+  "editor.formatOnSave": false
+}

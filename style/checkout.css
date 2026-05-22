@@ -1,0 +1,118 @@
+.checkout-heading {
+  @apply uppercase font-bold text-[32px] leading-none tracking-[-1px];
+  font-family: "Beatrice Deck Trial Extrabold";
+}
+
+.checkout-tab {
+  @apply uppercase text-[16px] font-medium text-black/40;
+  font-family: "Beatrice Deck Trial Medium";
+}
+
+.checkout-tab-active {
+  @apply uppercase text-[16px] font-medium text-black;
+  font-family: "Beatrice Deck Trial Medium";
+}
+
+.checkout-subtitle {
+  @apply uppercase text-[14px] font-medium tracking-wide;
+  font-family: "Beatrice Deck Trial Medium";
+}
+
+.checkout-input {
+  @apply  h-[48px] border border-black/10 bg-transparent px-4 text-[12px] font-medium outline-none ;
+  font-family: 'Beatrice Trial Regular';
+}
+
+.checkout-button {
+  @apply  h-[48px] bg-[#D9D9D9] flex items-center justify-between px-5 text-[13px] transition-all;
+}
+.checkout-option{
+    @apply w-full h-[48px] border border-black/10 bg-transparent px-4 text-[12px] font-medium outline-none 
+}
+
+.checkout-order-wrapper {
+  @apply border border-black/10 bg-white p-5;
+}
+
+.checkout-total-row {
+  @apply flex items-center justify-between text-[12px];
+}
+
+.checkout-total-final {
+  @apply flex items-center justify-between mt-6 text-[14px] font-medium;
+}
+
+@media screen and (min-width: 1920px) {
+  .checkout-heading {
+    font-size: 32px;
+    line-height: 40px;
+    letter-spacing: 2px;
+    font-family: "Beatrice Deck Trial Extrabold";
+  }
+
+  .checkout-order-wrapper {
+    padding: 24px;
+  }
+}
+
+@media screen and (min-width: 1366px) and (max-width: 1919.98px) {
+  .checkout-heading {
+    font-size: 32px;
+    line-height: 40px;
+    letter-spacing: 2px;
+    font-family: "Beatrice Deck Trial Extrabold";
+  }
+}
+
+@media screen and (min-width: 1280px) and (max-width: 1365.98px) {
+  .checkout-heading {
+    font-size: 32px;
+    line-height: 40px;
+    letter-spacing: 2px;
+    font-family: "Beatrice Deck Trial Extrabold";
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279.98px) {
+  .checkout-heading {
+    font-size: 32px;
+    line-height: 40px;
+    letter-spacing: 2px;
+    font-family: "Beatrice Deck Trial Extrabold";
+  }
+}
+
+@media (min-width: 600px) and (max-width: 799.98px) {
+  .checkout-heading {
+    font-size: 32px;
+    line-height: 40px;
+    letter-spacing: 2px;
+    font-family: "Beatrice Deck Trial Extrabold";
+  }
+
+  .checkout-button {
+    width: 100%;
+  }
+}
+
+@media (min-width: 360px) and (max-width: 427.98px) {
+  .checkout-heading {
+    font-size: 32px;
+    line-height: 40px;
+    letter-spacing: 2px;
+    font-family: "Beatrice Deck Trial Extrabold";
+  }
+
+  .checkout-button {
+    width: 100%;
+  }
+
+  .checkout-order-wrapper {
+    padding: 16px;
+  }
+
+  .checkout-input {
+    height: 44px;
+    font-size: 11px;
+  }
+}
