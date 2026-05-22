@@ -63,8 +63,7 @@ function CheckOut() {
                 <OrderCard key={item.id} item={item} />
               ))}
             </div>
-
-            {/* Totals */}
+ 
             <div className="border-t border-black/10 mt-6 pt-5">
               <div className="checkout-total-row">
                 <span className="font-beatriceDeckMedium text-[12px]">
