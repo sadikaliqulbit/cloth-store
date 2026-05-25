@@ -9,6 +9,7 @@ export default function OrderConfirmedPage() {
   const router = useRouter();
 
   const getLastOrder = (): Order | null => {
+    if (typeof window === "undefined") return null;
     const orders = localStorage.getItem("orders");
     if (!orders) return null;
     const parsed: Order[] = JSON.parse(orders);
