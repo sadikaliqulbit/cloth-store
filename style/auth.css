@@ -1,0 +1,23 @@
+  .auth-input {
+  @apply w-full h-[48px] border border-black/10 bg-transparent px-4 text-[12px] outline-none;
+  font-family: "Beatrice Trial Regular";
+}
+
+.auth-input:focus {
+  @apply border-black/40;
+}
+
+.auth-button {
+  @apply w-full h-[48px] bg-black text-white text-[13px] uppercase tracking-[1px] transition-opacity hover:opacity-80;
+  font-family: "Beatrice Deck Trial Medium";
+}
+ 
+.auth-divider {
+  @apply flex items-center gap-3 my-6;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  @apply flex-1 h-px bg-black/10;
+} 

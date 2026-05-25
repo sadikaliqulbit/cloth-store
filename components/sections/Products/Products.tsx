@@ -3,61 +3,90 @@
 import { Search, ChevronRight, ChevronLeft } from "lucide-react";
 import Card from "@/components/ui/Card/Card";
 import "@/style/main.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FilterSidebar from "./FilterSidebar";
+import { CartItem } from "@/types"; 
+import { useSearchParams } from "next/navigation";
+import { getProducts } from "@/api/api";
 
 const filterButtons = [
-  "NEW",
-  "BEST SELLERS",
-  "SHIRTS",
-  "POLO SHIRTS",
-  "SHORTS",
-  "T-SHIRTS",
-  "JEANS",
-  "JACKETS",
-  "COATS",
+  "ALL", "NEW", "BEST SELLERS", "SHIRTS", "POLO SHIRTS",
+  "SHORTS", "T-SHIRTS", "JEANS", "JACKETS", "COATS",
 ];
 
+const categoryMap: Record<string, string> = {
+  SHIRTS: "men's clothing",
+  "T-SHIRTS": "men's clothing",
+  JEANS: "men's clothing",
+  JACKETS: "women's clothing",
+  COATS: "women's clothing",
+  "POLO SHIRTS": "men's clothing",
+  SHORTS: "men's clothing",
+};
+
 function Products() {
+  const searchParams = useSearchParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const [allProducts, setAllProducts] = useState<CartItem[]>([]);
+  const [search, setSearch] = useState(searchParams.get("q") ?? "");
+  const [activeFilter, setActiveFilter] = useState("ALL");
+  const [selectedSize, setSelectedSize] = useState("");
+ 
+  useEffect(() => {
+    const cat = searchParams.get("category");
+    if (cat === "men") setActiveFilter("SHIRTS");
+    else if (cat === "women") setActiveFilter("JACKETS");
+    const q = searchParams.get("q");
+    if (q) setSearch(q);
+  }, [searchParams]);
+
+  useEffect(() => {
+    getProducts().then(setAllProducts);
+  }, []);
+
+  const filtered = allProducts.filter((p) => {
+    const matchSearch =
+      search === "" ||
+      p.title.toLowerCase().includes(search.toLowerCase()) ||
+      p.category.toLowerCase().includes(search.toLowerCase());
+
+    const categoryKeyword = categoryMap[activeFilter] ?? "";
+    const matchCategory =
+      activeFilter === "ALL" ||
+      activeFilter === "NEW" ||
+      activeFilter === "BEST SELLERS" ||
+      p.category.toLowerCase().includes(categoryKeyword.toLowerCase());
+
+    const matchSize = selectedSize === "" || p.size === selectedSize || p.size === "";
+
+    return matchSearch && matchCategory && matchSize;
+  });
 
   return (
     <section className="hero_style_main relative">
-      <div className="flex gap-8">
+      <div className="flex gap-8"> 
         <div className="mt-20 hidden w-[280px] flex-shrink-0 lg:block">
-          <FilterSidebar />
+          <FilterSidebar selectedSize={selectedSize} onSizeChange={setSelectedSize} />
         </div>
-
-        <div
-          className={`fixed left-0 top-[250px] z-50 h-screen w-[300px] overflow-y-auto bg-white p-5 transition-all duration-500 lg:hidden ${
-            isMenuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-        >
+ 
+        <div className={`fixed left-0 top-[250px] z-50 h-screen w-[300px] overflow-y-auto bg-white p-5 transition-all duration-500 lg:hidden ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
           <div className="mb-8 flex items-center justify-between">
-            <h2 className="font-beatriceDeckBold text-[18px] font-bold text-black">
-              Filters
-            </h2>
-            <button onClick={toggleMenu}>
+            <h2 className="font-beatriceDeckBold text-[18px] font-bold text-black">Filters</h2>
+            <button onClick={() => setIsMenuOpen(false)}>
               <ChevronLeft className="h-6 w-6 text-black" />
             </button>
           </div>
-          <FilterSidebar />
+          <FilterSidebar selectedSize={selectedSize} onSizeChange={setSelectedSize} />
         </div>
 
         {isMenuOpen && (
-          <div
-            onClick={toggleMenu}
-            className="fixed inset-0 z-40 bg-black/80 lg:hidden"
-          />
+          <div onClick={() => setIsMenuOpen(false)} className="fixed inset-0 z-40 bg-black/80 lg:hidden" />
         )}
 
         <div className="flex-1">
           <div className="mb-10">
             <div>
-              <p className="font-beatriceDeckMedium text-[14px] font-medium text-black/60">
-                Home / Products
-              </p>
+              <p className="font-beatriceDeckMedium text-[14px] font-medium text-black/60">Home / Products</p>
               <h1 className="font-beatriceDeckExtrabold text-[35px] font-bold uppercase leading-[40px] tracking-[2px] text-black">
                 Products
               </h1>
@@ -70,39 +99,34 @@ function Products() {
                     <Search className="h-4 w-4 text-black/60" />
                     <input
                       type="text"
-                      className="w-full bg-transparent px-3 outline-none"
-                      aria-label="email"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Search products..."
+                      className="w-full bg-transparent px-3 outline-none font-beatriceRegular text-[12px]"
                     />
-                    <span className="cursor-pointer font-beatriceDeckRegular text-[12px] text-black/60">
-                      Search
-                    </span>
+                    {search && (
+                      <button onClick={() => setSearch("")}
+                        className="cursor-pointer font-beatriceDeckRegular text-[12px] text-black/60 hover:text-black">✕</button>
+                    )}
                   </div>
                 </div>
               </div>
 
-              <div
-                className={`flex items-center gap-2 lg:hidden ${isMenuOpen ? "hidden" : "flex"}`}
-              >
-                <button
-                  onClick={toggleMenu}
-                  className="font-beatriceDeckBold text-[16px] font-bold text-black"
-                  aria-label="Open filters"
-                >
-                  Filters
-                </button>
-                <ChevronRight
-                  className="h-5 w-5 cursor-pointer text-black"
-                  strokeWidth={1.5}
-                />
+              <div className={`flex items-center gap-2 lg:hidden ${isMenuOpen ? "hidden" : "flex"}`}>
+                <button onClick={() => setIsMenuOpen(true)}
+                  className="font-beatriceDeckBold text-[16px] font-bold text-black">Filters</button>
+                <ChevronRight className="h-5 w-5 cursor-pointer text-black" strokeWidth={1.5} />
               </div>
 
               <div className="flex justify-center items-center scrollbar-hide overflow-x-auto">
                 <div className="flex w-max gap-[10px]">
                   {filterButtons.map((filter) => (
-                    <button
-                      key={filter}
-                      className="flex-shrink-0 min-w-[101px] h-[30px] border border-[#BEBEBE] bg-transparent px-[12px] text-center font-beatriceRegular text-[10px] font-normal uppercase tracking-[0.8px] text-[#5E5E5E] transition-all duration-300 hover:border-black hover:text-black"
-                    >
+                    <button key={filter} onClick={() => setActiveFilter(filter)}
+                      className={`flex-shrink-0 min-w-[101px] h-[30px] border px-[12px] text-center font-beatriceRegular text-[10px] font-normal uppercase tracking-[0.8px] transition-all duration-300 ${
+                        activeFilter === filter
+                          ? "border-black bg-black text-white"
+                          : "border-[#BEBEBE] bg-transparent text-[#5E5E5E] hover:border-black hover:text-black"
+                      }`}>
                       {filter}
                     </button>
                   ))}
@@ -115,6 +139,7 @@ function Products() {
             initialItems={8}
             cardClassName="min-w-[149px] h-[200px] mtd:min-w-[265px] mtd:h-[314px]"
             isClickable
+            filteredItems={filtered}
           />
         </div>
       </div>

@@ -1,6 +1,6 @@
 "use client";
-
-import { getProductImages } from "@/services/api";
+ 
+import { getProductImages } from "@/api/api";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 

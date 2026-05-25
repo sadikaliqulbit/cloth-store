@@ -36,3 +36,4 @@ export const getProductImages = async (): Promise<string[]> => {
   const data: ApiProduct[] = await response.json();
   return data.map((item) => item.image);
 };
+

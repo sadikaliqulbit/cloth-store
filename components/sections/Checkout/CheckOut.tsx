@@ -6,20 +6,20 @@ import "@/style/main.css";
 import CheckoutForm from "./CheckoutForm";
 import OrderCard from "./OrderCard";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CartItem } from "@/types";
+import { useAuth } from "@/hooks/useAuth";
 
 function CheckOut() {
-  const [checkout, setCheckout] = useState<CartItem[]>(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("cart");
-
-      return stored ? JSON.parse(stored) : [];
-    }
-
-    return [];
-  });
+  const { currentUser } = useAuth();
+  const [checkout, setCheckout] = useState<CartItem[]>([]);
   const route = useRouter();
+
+  useEffect(() => {
+    const cartKey = currentUser ? `cart__${currentUser.email}` : "cart";
+    const stored = localStorage.getItem(cartKey);
+    setCheckout(stored ? JSON.parse(stored) : []);
+  }, [currentUser]);
 
   const subtotal = checkout.reduce(
     (sum, item) => sum + item.price * item.quantity,

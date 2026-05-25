@@ -3,9 +3,9 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { getProductImages } from "@/services/api";
 import arrow from "@/public/assets/NewCollection/arrow.svg";
 import { useRouter } from "next/navigation";
+import { getProductImages } from "@/api/api";
 
 function NewCollection() {
   const [images, setImages] = useState<string[]>([]);

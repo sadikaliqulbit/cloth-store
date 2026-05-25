@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { getProducts } from "@/services/api";
+import { ChevronLeft, ChevronRight } from "lucide-react"; 
+import { useRouter } from "next/navigation";
+import { getProducts } from "@/api/api";
 
 function NewThisWeek() {
   type Product = {
@@ -14,6 +15,7 @@ function NewThisWeek() {
   };
   const [item, setItem] = useState<Product[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchTitle = async () => {
@@ -48,9 +50,10 @@ function NewThisWeek() {
           </span>
         </h1>
 
-        <p className="mt-4 font-beatriceDeckRegular text-[16px] leading-[100%] tracking-[2px] text-black/70">
+        <button onClick={() => router.push("/products")}
+          className="mt-4 font-beatriceDeckRegular text-[16px] leading-[100%] tracking-[2px] text-black/70 hover:text-black transition-colors">
           See All
-        </p>
+        </button>
       </div>
       <div className="grid grid-cols-1 gap-3 mtd:grid-cols-4">
         <div className="mt-10 flex items-center gap-4">

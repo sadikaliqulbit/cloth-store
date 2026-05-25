@@ -4,12 +4,16 @@ import Image from "next/image";
 import { Heart } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { getProductById } from "@/services/api";
 import "@/style/main.css";
 import { CartItem } from "@/types";
+import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
+import { useToast } from "@/hooks/useToast";
+import AuthModal from "@/components/ui/AuthModal/AuthModal";
+import ToastContainer from "@/components/ui/Toast/ToastContainer"; 
+import { getProductById } from "@/api/api";
 
 const sizes = ["XS", "S", "M", "L", "XL", "2X"];
-
 const colors = ["#D9D9D9", "#A9A9A9", "#1E1E1E", "#A6D6CA", "#FFFFFF", "#B9C1E8"];
 
 type Product = {
@@ -27,34 +31,28 @@ function ProductsDetails() {
   const [selectedImage, setSelectedImage] = useState("");
   const [selectedSize, setSelectedSize] = useState("M");
   const [selectedColor, setSelectedColor] = useState("#2d2d2d");
+  const [showModal, setShowModal] = useState(false);
+
+  const { currentUser, login } = useAuth();
+  const { addItem } = useCart(currentUser?.email ?? null);
+  const { toasts, showToast, removeToast } = useToast();
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchProduct = async () => {
       const data = await getProductById(id);
       setProduct(data);
       setSelectedImage(data.image);
     };
-    fetch();
+    fetchProduct();
   }, [id]);
 
   if (!product)
-    return (
-      <div className="flex h-screen items-center justify-center">
-        Loading...
-      </div>
-    );
+    return <div className="flex h-screen items-center justify-center">Loading...</div>;
 
-  const thumbnails = [
-    product.image,
-    product.image,
-    product.image,
-    product.image,
-    product.image,
-  ];
+  const thumbnails = Array(5).fill(product.image);
 
-  const handleAddToCart = () => {
+  const doAddToCart = () => {
     if (!product) return;
-
     const cartItem: CartItem = {
       id: product.id,
       title: product.title,
@@ -65,21 +63,13 @@ function ProductsDetails() {
       color: selectedColor,
       quantity: 1,
     };
+    addItem(cartItem);
+    showToast(`"${product.title.slice(0, 30)}..." added to cart`, "success");
+  };
 
-    const existing = localStorage.getItem("cart");
-    const cart: CartItem[] = existing ? JSON.parse(existing) : [];
-
-    const index = cart.findIndex(
-      (item) => item.id === product.id && item.size === selectedSize && item.color === selectedColor
-    );
-
-    if (index !== -1) {
-      cart[index].quantity += 1;
-    } else {
-      cart.push(cartItem);
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
+  const handleAddToCart = () => {
+    if (!currentUser) { setShowModal(true); return; }
+    doAddToCart();
   };
 
   return (
@@ -88,28 +78,15 @@ function ProductsDetails() {
         <div className="grid lg:grid-cols-[1fr_420px]">
           <div className="flex justify-center items-center flex-col gap-10 mtd:flex-row">
             <div className="flex-1 border border-[#e5e5e5] bg-[#f1f2f7] min-w-[393px] h-[601px] mtd:max-w-[367px] mtd:h-[438px]">
-              <Image
-                src={selectedImage}
-                alt="product"
-                width={367}
-                height={438}
-                className="w-[367px] h-[438px] object-contain"
-              />
+              <Image src={selectedImage} alt="product" width={367} height={438}
+                className="w-[367px] h-[438px] object-contain" />
             </div>
             <div className="mx-[20px] mtd:mx-0 scrollbar-hide flex gap-3 overflow-x-auto mtd:flex-col">
               {thumbnails.map((img, index) => (
-                <div
-                  key={index}
-                  onClick={() => setSelectedImage(img)}
-                  className="flex-shrink-0 cursor-pointer border border-[#d9d9d9] min-w-[62px] h-[75px]"
-                >
-                  <Image
-                    src={img}
-                    alt="thumb"
-                    width={62}
-                    height={75}
-                    className="w-[62px] h-[75px] object-contain"
-                  />
+                <div key={index} onClick={() => setSelectedImage(img)}
+                  className="flex-shrink-0 cursor-pointer border border-[#d9d9d9] min-w-[62px] h-[75px]">
+                  <Image src={img} alt="thumb" width={62} height={75}
+                    className="w-[62px] h-[75px] object-contain" />
                 </div>
               ))}
             </div>
@@ -121,21 +98,12 @@ function ProductsDetails() {
                 <h2 className="font-beatriceDeckMedium text-[14px] uppercase tracking-[1px] text-black">
                   {product.category}
                 </h2>
-                <p className="mt-1 font-beatriceDeckMedium text-[13px] text-black/70">
-                  {product.title}
-                </p>
-                <p className="mt-3 font-beatriceDeckMedium text-[14px] text-black">
-                  ${product.price}
-                </p>
-                <p className="mt-1 font-beatriceRegular text-[12px] text-[#7b7b7b]">
-                  MRP incl. of all taxes
-                </p>
+                <p className="mt-1 font-beatriceDeckMedium text-[13px] text-black/70">{product.title}</p>
+                <p className="mt-3 font-beatriceDeckMedium text-[14px] text-black">${product.price}</p>
+                <p className="mt-1 font-beatriceRegular text-[12px] text-[#7b7b7b]">MRP incl. of all taxes</p>
               </div>
               <button>
-                <Heart
-                  size={18}
-                  className="stroke-[#7c7c7c] transition-all hover:fill-black hover:stroke-black"
-                />
+                <Heart size={18} className="stroke-[#7c7c7c] transition-all hover:fill-black hover:stroke-black" />
               </button>
             </div>
 
@@ -144,40 +112,25 @@ function ProductsDetails() {
             </p>
 
             <div className="mt-10">
-              <p className="font-beatriceRegular text-[13px] uppercase tracking-[1px] text-[#8c8c8c]">
-                Color
-              </p>
+              <p className="font-beatriceRegular text-[13px] uppercase tracking-[1px] text-[#8c8c8c]">Color</p>
               <div className="mt-4 flex gap-1">
                 {colors.map((color, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedColor(color)}
+                  <button key={index} onClick={() => setSelectedColor(color)}
                     style={{ backgroundColor: color }}
-                    className={`h-[32px] w-[32px] border transition-all ${
-                      selectedColor === color
-                        ? "border-black"
-                        : "border-[#d8d8d8]"
-                    }`}
+                    className={`h-[32px] w-[32px] border transition-all ${selectedColor === color ? "border-black" : "border-[#d8d8d8]"}`}
                   />
                 ))}
               </div>
             </div>
 
             <div className="mt-10">
-              <p className="font-beatriceRegular text-[13px] uppercase tracking-[1px] text-[#8c8c8c]">
-                Size
-              </p>
+              <p className="font-beatriceRegular text-[13px] uppercase tracking-[1px] text-[#8c8c8c]">Size</p>
               <div className="mt-4 flex flex-wrap gap-1">
                 {sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
+                  <button key={size} onClick={() => setSelectedSize(size)}
                     className={`flex h-[36px] min-w-[38px] items-center font-beatriceDeckMedium justify-center border text-[10px] transition-all ${
-                      selectedSize === size
-                        ? "border-black bg-black text-white"
-                        : "border-[#d8d8d8] bg-white text-black"
-                    }`}
-                  >
+                      selectedSize === size ? "border-black bg-black text-white" : "border-[#d8d8d8] bg-white text-black"
+                    }`}>
                     {size}
                   </button>
                 ))}
@@ -189,7 +142,7 @@ function ProductsDetails() {
 
             <button
               className="mt-3 hidden h-[52px] w-full bg-black mtd:max-w-[229px] font-beatriceRegular text-[13px] uppercase tracking-[1px] text-white transition-all hover:opacity-90 mtd:block"
-              onClick={() => handleAddToCart()}
+              onClick={handleAddToCart}
             >
               Add to Cart
             </button>
@@ -198,13 +151,20 @@ function ProductsDetails() {
       </div>
 
       <div className="fixed bottom-0 left-0 z-50 w-full border-t border-[#dfdfdf] bg-white mtd:hidden">
-        <button
-          className="h-[52px] w-full bg-black font-beatriceRegular text-[13px] uppercase tracking-[1px] text-white"
-          onClick={() => handleAddToCart()}
-        >
+        <button className="h-[52px] w-full bg-black font-beatriceRegular text-[13px] uppercase tracking-[1px] text-white"
+          onClick={handleAddToCart}>
           Add to Cart
         </button>
       </div>
+
+      {showModal && (
+        <AuthModal
+          onClose={() => setShowModal(false)}
+          onLogin={(user) => { login(user); setTimeout(doAddToCart, 100); }}
+        />
+      )}
+
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </section>
   );
 }
