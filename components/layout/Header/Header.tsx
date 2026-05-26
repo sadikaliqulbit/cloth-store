@@ -98,7 +98,7 @@ function Header() {
             </div>
 
             {currentUser ? (
-              <div className="flex items-center gap-2 border border-[#000] rounded-full pl-5">
+              <div className="flex items-center gap-2 border border-transparent cursor-pointer mtd:border-[#000] mtd:rounded-full pl-5">
                 <span className="hidden mtd:block text-[11px] font-beatriceDeckMedium text-black/60">
                   {currentUser.firstName}
                 </span>

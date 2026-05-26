@@ -50,7 +50,7 @@ export default function AuthModal({ onClose, onLogin }: Props) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
-      <div className="auth-card relative w-full max-w-[440px]">
+      <div className="auth-card relative w-full max-w-[440px] bg-[#fff] p-6 md:p-8 rounded-lg shadow-xl">
         <button onClick={onClose} className="absolute right-4 top-4 text-black/40 hover:text-black">
           <X size={18} />
         </button>

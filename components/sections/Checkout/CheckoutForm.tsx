@@ -10,6 +10,7 @@ import { ShippingInfo } from "@/types";
 import { validateCheckoutForm, ValidationErrors } from "@/lib/validation";
 import { useToast } from "@/hooks/useToast";
 import { useAuth } from "@/hooks/useAuth";
+import { sendEmails } from "@/lib/email";
 
 function CheckoutForm() {
   const router = useRouter();
@@ -35,7 +36,7 @@ function CheckoutForm() {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const newErrors = validateCheckoutForm(form);
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -48,7 +49,8 @@ function CheckoutForm() {
     const order = {
       id: Date.now(),
       shippingInfo: form,
-      items: cart ? JSON.parse(cart) : [],
+      items: cart ? JSON.parse(cart) : [] as import("@/types").CartItem[],
+      total: cart ? (JSON.parse(cart) as import("@/types").CartItem[]).reduce((sum, item) => sum + item.price * item.quantity, 0) : 0,
       placedAt: new Date().toISOString(),
     };
 
@@ -59,6 +61,18 @@ function CheckoutForm() {
     localStorage.removeItem(cartKey);
 
     showToast("Order placed successfully!", "success");
+
+    try {
+      await sendEmails({
+        customerName: order.shippingInfo.firstName,
+        customerEmail: order.shippingInfo.email,
+        orderId: order.id,
+        total: order.total,
+      });
+    } catch (err: any) {
+      console.error("Email send failed - status:", err?.status, "text:", err?.text, "full:", JSON.stringify(err));
+    }
+
     setTimeout(() => router.push("/order-confirmed"), 800);
   };
 

@@ -46,7 +46,7 @@ function OrderCard({ item }: OrderCardProps) {
           </button>
 
           <p className="font-beatriceDeckMedium text-[12px] font-medium">
-            ${item.price}
+            ${item.price.toFixed(2)}
           </p>
         </div>
       </div>

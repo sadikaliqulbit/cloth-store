@@ -44,7 +44,7 @@ export default function OrderConfirmedPage() {
             <span>Shipping</span><span>$10</span>
           </div>
           <div className="flex justify-between font-beatriceDeckMedium text-[15px]">
-            <span>Total</span><span>${total}</span>
+            <span>Total</span><span>${total.toFixed(2)}</span>
           </div>
         </div>
 

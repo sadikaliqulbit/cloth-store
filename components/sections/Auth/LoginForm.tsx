@@ -4,11 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import "@/style/auth.css";
+import ToastContainer from "@/components/ui/Toast/ToastContainer";
+import { useToast } from "@/hooks/useToast";
 
 export default function LoginForm() {
   const router = useRouter();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+   const { toasts, showToast, removeToast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -25,11 +28,14 @@ export default function LoginForm() {
       return;
     }
     localStorage.setItem("currentUser", JSON.stringify(match));
+    showToast("Login successful!", "success")
     router.push("/");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f9f9f9] px-4">
+    <>
+    <ToastContainer toasts={toasts} removeToast={removeToast} />
+    <section className="min-h-screen flex items-center justify-center bg-[#f9f9f9] px-4">
       <div className="w-full max-w-[480px] bg-white border border-black/10 p-10">
         <h1 className="uppercase text-[28px] leading-none tracking-[-1px] mb-1 font-beatriceDeckExtrabold">Welcome Back</h1>
         <p className="text-[12px] text-black/50 mb-8 font-beatriceRegular">Sign in to your account to continue.</p>
@@ -78,6 +84,8 @@ export default function LoginForm() {
           </Link>
         </p>
       </div>
-    </div>
+      
+    </section>
+    </>
   );
 }

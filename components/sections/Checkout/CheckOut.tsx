@@ -60,7 +60,7 @@ function CheckOut() {
 
             <div className="space-y-5 overflow-hidden max-h-[288px] overflow-y-auto scrollbar-hide">
               {checkout.map((item) => (
-                <OrderCard key={item.id} item={item} />
+                <OrderCard key={`${item.id}-${item.size}-${item.color}`} item={item} />
               ))}
             </div>
  
@@ -71,7 +71,7 @@ function CheckOut() {
                 </span>
 
                 <span className="font-beatriceDeckMedium text-[12px]">
-                  ${subtotal}
+                  ${subtotal.toFixed(2)}
                 </span>
               </div>
 
@@ -90,7 +90,7 @@ function CheckOut() {
                   Total
                 </span>
                 <span className="font-beatriceDeckMedium text-[14px]">
-                  ${subtotal + 10}
+                  ${(subtotal + 10).toFixed(2)}
                 </span>
               </div>
             </div>
