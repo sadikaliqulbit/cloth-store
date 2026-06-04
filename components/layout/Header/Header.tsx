@@ -19,6 +19,7 @@ function Header() {
     { id: 1, title: "Home", href: "/" },
     { id: 2, title: "Collections", href: "/" },
     { id: 3, title: "New", href: "/" },
+    { id: 4, title: "Admin", href: "/admin" },
   ];
  
   useEffect(() => {

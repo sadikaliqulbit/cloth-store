@@ -16,7 +16,7 @@ export default function OrderConfirmedPage() {
     return parsed[parsed.length - 1] ?? null;
   };
 
-  const [order] = useState<Order | null>(getLastOrder);
+  const [order] = useState<Order | null>(getLastOrder); 
 
   if (!order) return null;
 
@@ -64,6 +64,12 @@ export default function OrderConfirmedPage() {
         >
           Continue Shopping
         </button>
+        {/* <button
+          onClick={() => window.print()}
+          className="font-beatriceDeckMedium bg-black text-white px-10 py-4 text-[13px] uppercase tracking-[1px] hover:opacity-90 transition"
+        >
+          print bill
+        </button> */}
       </div>
     </section>
   );

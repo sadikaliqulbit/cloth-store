@@ -22,7 +22,7 @@ function Hero() {
   return (
     <>
       <section className="hero_style_main">
-        <div className="min-w-[69px]">
+        <div className="max-w-[69px]">
           <p className="font-beatriceDeckRegular text-[12px] mtd:text-[16px] uppercase cursor-pointer hover:opacity-60 transition-opacity"
             onClick={() => router.push("/products?category=men")}>men</p>
           <p className="font-beatriceDeckRegular text-[12px] mtd:text-[16px] uppercase cursor-pointer hover:opacity-60 transition-opacity"

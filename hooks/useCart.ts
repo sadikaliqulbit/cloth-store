@@ -16,8 +16,7 @@ export function useCart(userEmail: string | null) {
     if (typeof window === "undefined" || !storageKey) return [];
     const stored = localStorage.getItem(storageKey);
     return stored ? JSON.parse(stored) : [];
-  });
-
+  });   
   
   useEffect(() => {
     if (!storageKey) {

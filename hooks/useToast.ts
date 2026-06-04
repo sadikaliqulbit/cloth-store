@@ -11,7 +11,7 @@ export type Toast = {
 };
 
 export function useToast() {
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [toasts, setToasts] = useState<Toast[]>([]); 
 
   const showToast = useCallback((message: string, type: ToastType = "success") => {
     const id = Date.now();

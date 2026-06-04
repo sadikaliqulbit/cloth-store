@@ -59,7 +59,7 @@ function Card({
       {source.length === 0 && (
         <p className="mt-10 text-center font-beatriceRegular text-[14px] text-black/40">No products found.</p>
       )}
-
+      
       {source.length > initialItems && (
         <div className="mt-10 flex items-center justify-center">
           <button onClick={() => setShowAll(!showAll)} className="flex flex-col items-center justify-center">

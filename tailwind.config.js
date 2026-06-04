@@ -30,7 +30,7 @@ module.exports = {
         interMedium: ['"Inter Medium"', 'sans-serif'],
         beatriceDeckBold: ['"Beatrice Deck Trial Bold"', 'sans-serif'],
       },
-
+      
     },
   },
   plugins: [],
