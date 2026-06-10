@@ -11,7 +11,7 @@ import { getProducts } from "@/api/api";
 type CardProps = {
   initialItems?: number;
   gridCols?: string;
-  cardClassName?: string;
+  cardClassName?: string; 
   isClickable: boolean;
   filteredItems?: CartItem[];
 };
@@ -38,7 +38,7 @@ function Card({
   return (
     <section>
       <div className={`mt-10 grid grid-cols-2 gap-2 md:grid-cols-2 mtd:gap-4 xl:grid-cols-3 xl:gap-10 ${gridCols}`}>
-        {visibleItems.map((item, index) => (
+        {visibleItems.map((item,index) => (
           <div key={`${item.id}-${index}`} className={isClickable ? "cursor-pointer" : ""}
             onClick={() => isClickable && router.push(`/product-details/${item.id}`)}>
             <div className={`flex items-center justify-center border border-black/5 bg-[#f1f2f7] min-w-[169px] h-[200px] mtd:min-w-[265px] mtd:h-[314px] ${cardClassName}`}>

@@ -31,8 +31,8 @@ function Hero() {
             onClick={() => router.push("/products?category=kid")}>kid</p>
         </div>
 
-        <form onSubmit={handleSearch} className="mt-5">
-          <div className="overflow-auto flex w-full max-w-[367px] items-center justify-between rounded-[2px] bg-[#D9D9D9] px-3 py-2">
+        <form onSubmit={handleSearch} className="mt-5 overflow-hidden">
+          <div className="flex max-w-[367px] items-center justify-between rounded-[2px] bg-[#D9D9D9] px-3 py-2">
             <Search className="h-4 w-4 text-black/60" />
             <InputField
               type="text"

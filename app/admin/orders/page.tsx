@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { Search, X } from "lucide-react";
 import { Order } from "@/types";
 import "@/style/admin.css";
+import Pagination from "@/components/ui/Pagination/Pagination";
 
 const statusList = ["All", "Pending", "Processing", "Delivered", "Cancelled"];
+const PER_PAGE = 8;
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -13,11 +15,14 @@ export default function AdminOrdersPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
   const [selected, setSelected] = useState<Order | null>(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     setOrders(JSON.parse(localStorage.getItem("orders") ?? "[]"));
     setOrderStatuses(JSON.parse(localStorage.getItem("orderStatuses") ?? "{}"));
   }, []);
+  
+  useEffect(() => { setPage(1); }, [search, filter]);
 
   const updateStatus = (id: number, status: string) => {
     const updated = { ...orderStatuses, [id]: status };
@@ -48,6 +53,9 @@ export default function AdminOrdersPage() {
     })
     .reverse();
 
+  const totalPages = Math.ceil(filtered.length / PER_PAGE);
+  const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
   return (
     <div>
       <div className="admin-topbar">
@@ -61,7 +69,6 @@ export default function AdminOrdersPage() {
 
       <div className="p-8">
         <div className="bg-white border border-black/5 p-6">
-          {/* Filters */}
           <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
             <div className="flex items-center gap-2 bg-[#f5f5f5] px-3 h-[40px] w-full md:max-w-[300px]">
               <Search size={14} className="text-black/40" />
@@ -93,82 +100,88 @@ export default function AdminOrdersPage() {
           {filtered.length === 0 ? (
             <p className="font-beatriceRegular text-[13px] text-black/30 text-center py-16">No orders found.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Location</th>
-                    <th>Items</th>
-                    <th>Total</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((order) => {
-                    const total = order.items.reduce((s, i) => s + i.price * i.quantity, 0) + 10;
-                    const status = getStatus(order.id);
-                    return (
-                      <tr key={order.id} className="hover:bg-[#fafafa]">
-                        <td className="font-beatriceDeckMedium text-[12px] text-black/40">
-                          #{String(order.id).slice(-6)}
-                        </td>
-                        <td>
-                          <p className="font-beatriceDeckMedium text-[13px]">
-                            {order.shippingInfo.firstName} {order.shippingInfo.lastName}
-                          </p>
-                          <p className="font-beatriceRegular text-[11px] text-black/40">{order.shippingInfo.email}</p>
-                        </td>
-                        <td className="font-beatriceRegular text-black/60">
-                          {order.shippingInfo.city}, {order.shippingInfo.country}
-                        </td>
-                        <td className="font-beatriceRegular">{order.items.reduce((s, i) => s + i.quantity, 0)}</td>
-                        <td className="font-beatriceDeckMedium">${total.toFixed(2)}</td>
-                        <td className="font-beatriceRegular text-black/50">
-                          {new Date(order.placedAt).toLocaleDateString("en-US", {
-                            month: "short", day: "numeric", year: "numeric",
-                          })}
-                        </td>
-                        <td>
-                          <select
-                            value={status}
-                            onChange={(e) => updateStatus(order.id, e.target.value)}
-                            className={`${badgeClass(status)} cursor-pointer outline-none bg-transparent border-none`}
-                          >
-                            {statusList.slice(1).map((s) => (
-                              <option key={s} value={s}>{s}</option>
-                            ))}
-                          </select>
-                        </td>
-                        <td>
-                          <button
-                            onClick={() => setSelected(order)}
-                            className="font-beatriceRegular text-[11px] text-black/40 hover:text-black underline underline-offset-2 transition"
-                          >
-                            View
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <>
+              <div className="overflow-x-auto">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Customer</th>
+                      <th>Location</th>
+                      <th>Items</th>
+                      <th>Total</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginated.map((order) => {
+                      const total = order.items.reduce((s, i) => s + i.price * i.quantity, 0) + 10;
+                      const status = getStatus(order.id);
+                      return (
+                        <tr key={order.id} className="hover:bg-[#fafafa]">
+                          <td className="font-beatriceDeckMedium text-[12px] text-black/40">
+                            #{String(order.id).slice(-6)}
+                          </td>
+                          <td>
+                            <p className="font-beatriceDeckMedium text-[13px]">
+                              {order.shippingInfo.firstName} {order.shippingInfo.lastName}
+                            </p>
+                            <p className="font-beatriceRegular text-[11px] text-black/40">{order.shippingInfo.email}</p>
+                          </td>
+                          <td className="font-beatriceRegular text-black/60">
+                            {order.shippingInfo.city}, {order.shippingInfo.country}
+                          </td>
+                          <td className="font-beatriceRegular">{order.items.reduce((s, i) => s + i.quantity, 0)}</td>
+                          <td className="font-beatriceDeckMedium">${total.toFixed(2)}</td>
+                          <td className="font-beatriceRegular text-black/50">
+                            {new Date(order.placedAt).toLocaleDateString("en-US", {
+                              month: "short", day: "numeric", year: "numeric",
+                            })}
+                          </td>
+                          <td>
+                            <select
+                              value={status}
+                              onChange={(e) => updateStatus(order.id, e.target.value)}
+                              className={`${badgeClass(status)} cursor-pointer outline-none bg-transparent border-none`}
+                            >
+                              {statusList.slice(1).map((s) => (
+                                <option key={s} value={s}>{s}</option>
+                              ))}
+                            </select>
+                          </td>
+                          <td>
+                            <button
+                              onClick={() => setSelected(order)}
+                              className="font-beatriceRegular text-[11px] text-black/40 hover:text-black underline underline-offset-2 transition"
+                            >
+                              View
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                totalItems={filtered.length}
+                perPage={PER_PAGE}
+                onPageChange={setPage}
+              />
+            </>
           )}
         </div>
       </div>
 
-      {/* Order Detail Modal */}
       {selected && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4">
           <div className="bg-white w-full max-w-[540px] max-h-[90vh] overflow-y-auto p-8 relative">
-            <button
-              onClick={() => setSelected(null)}
-              className="absolute right-5 top-5 text-black/30 hover:text-black"
-            >
+            <button onClick={() => setSelected(null)} className="absolute right-5 top-5 text-black/30 hover:text-black">
               <X size={18} />
             </button>
 
@@ -213,9 +226,7 @@ export default function AdminOrdersPage() {
                         </p>
                       </div>
                     </div>
-                    <p className="font-beatriceDeckMedium text-[13px]">
-                      ${(item.price * item.quantity).toFixed(2)}
-                    </p>
+                    <p className="font-beatriceDeckMedium text-[13px]">${(item.price * item.quantity).toFixed(2)}</p>
                   </div>
                 ))}
               </div>
